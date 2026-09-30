@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoboClub | სასწავლო პლატფორმა</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- გვერდითა პანელი -->
+        <aside class="sidebar">
+            <div class="logo">RoboClub</div>
+            <ul class="menu">
+                <li class="active" id="btn-tasks">დავალებები</li>
+                <li id="btn-leaderboard">რეიტინგი (ქულები)</li>
+                <li id="btn-teacher-panel" class="hidden">მასწავლებლის პანელი</li>
+            </ul>
+            <div class="user-info">
+                <span id="user-name">სტუმარი</span>
+                <button id="btn-login">შესვლა</button>
+            </div>
+        </aside>
+
+        <!-- მთავარი სამუშაო სივრცე -->
+        <main class="content">
+            <header>
+                <h1 id="page-title">მიმდინარე დავალება: LED ნათურის ჩართვა</h1>
+                <div class="score-display">ჩემი ქულა: <span id="student-score">0</span></div>
+            </header>
+
+            <!-- წრედის ასაწყობი არეალი -->
+            <div class="workspace">
+                <p class="instruction">ინსტრუქცია: დააკავშირე Arduino-ს მე-13 პინი ნათურის ანოდთან (+), ხოლო GND — კათოდთან (-).</p>
+                
+                <div class="circuit-board" id="circuit-board">
+                    <!-- ვირტუალური სადენების დასახატად -->
+                    <svg id="wires-svg" class="wires-layer"></svg>
+
+                    <!-- არდუინოს იმიტაცია -->
+                    <div class="component arduino" id="comp-arduino">
+                        <h3>Arduino Uno</h3>
+                        <div class="pins">
+                            <div class="pin" data-id="pin-13" data-type="out">Pin 13</div>
+                            <div class="pin" data-id="pin-gnd" data-type="gnd">GND</div>
+                        </div>
+                    </div>
+
+                    <!-- LED ნათურის იმიტაცია -->
+                    <div class="component led" id="comp-led">
+                        <h3>LED ნათურა</h3>
+                        <div class="pins">
+                            <div class="pin" data-id="led-anode" data-type="in">ანოდი (+)</div>
+                            <div class="pin" data-id="led-cathode" data-type="gnd">კათოდი (-)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btn-check" class="primary-btn">წრედის შემოწმება</button>
+                    <button id="btn-clear" class="secondary-btn">გასუფთავება</button>
+                </div>
+                <div id="status-message"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase და ლოგიკა (type="module" აუცილებელია Firebase 9+-ისთვის) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
