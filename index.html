@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoboLab - რობოტექნიკის სასწავლო პლატფორმა</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ნავიგაცია -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>Robo<span class="highlight">Lab</span></span>
+        </div>
+        <div id="user-nav" class="user-nav hidden">
+            <span id="user-display-name" class="user-badge"></span>
+            <span id="user-role-badge" class="role-badge"></span>
+            <button id="logout-btn" class="btn btn-danger btn-sm">
+                <i class="fa-solid fa-right-from-bracket"></i> გასვლა
+            </button>
+        </div>
+    </nav>
+
+    <!-- 1. ავტორიზაციის და რეგისტრაციის სექცია -->
+    <section id="auth-section" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchAuthTab('login')">შესვლა</button>
+                <button class="tab-btn" onclick="switchAuthTab('register')">რეგისტრაცია</button>
+            </div>
+
+            <!-- შესვლის ფორმა -->
+            <form id="login-form" class="auth-form">
+                <h2>სისტემაში შესვლა</h2>
+                <p class="subtitle">შეიყვანეთ თქვენი მონაცემები პანელში გადასასვლელად</p>
+                <div class="input-group">
+                    <label>ელ-ფოსტა</label>
+                    <input type="email" id="login-email" placeholder="student@robolab.ge" required>
+                </div>
+                <div class="input-group">
+                    <label>პაროლი</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-bolt"></i> შესვლა
+                </button>
+            </form>
+
+            <!-- რეგისტრაციის ფორმა -->
+            <form id="register-form" class="auth-form hidden">
+                <h2>მოსწავლის რეგისტრაცია</h2>
+                <p class="subtitle">შექმენით ანგარიში დავალებების შესასრულებლად</p>
+                <div class="input-group">
+                    <label>სახელი და გვარი</label>
+                    <input type="text" id="reg-name" placeholder="მაგ: გიორგი გიორგაძე" required>
+                </div>
+                <div class="input-group">
+                    <label>ელ-ფოსტა</label>
+                    <input type="email" id="reg-email" placeholder="giorgi@mail.com" required>
+                </div>
+                <div class="input-group">
+                    <label>პაროლი (მინ. 6 სიმბოლო)</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required>
+                </div>
+                <div class="input-group">
+                    <label>როლი</label>
+                    <select id="reg-role">
+                        <option value="student">მოსწავლე</option>
+                        <option value="teacher">მასწავლებელი (საჭიროებს კოდს)</option>
+                    </select>
+                </div>
+                <div class="input-group hidden" id="teacher-secret-group">
+                    <label>მასწავლებლის საიდუმლო კოდი</label>
+                    <input type="password" id="reg-secret" placeholder="შეიყვანეთ კოდი (ROBO2026)">
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fa-solid fa-user-plus"></i> დარეგისტრირება
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 2. მასწავლებლის პანელი -->
+    <section id="teacher-dashboard" class="dashboard hidden">
+        <div class="sidebar">
+            <button class="side-btn active" onclick="switchTeacherTab('create-task')">
+                <i class="fa-solid fa-plus-circle"></i> დავალების დამატება
+            </button>
+            <button class="side-btn" onclick="switchTeacherTab('all-tasks')">
+                <i class="fa-solid fa-list-check"></i> ჩემი დავალებები
+            </button>
+            <button class="side-btn" onclick="switchTeacherTab('submissions')">
+                <i class="fa-solid fa-graduation-cap"></i> მოსწავლეთა ნაშრომები
+            </button>
+        </div>
+
+        <div class="main-content">
+            <!-- დავალების შექმნა -->
+            <div id="teacher-create-task" class="tab-content">
+                <div class="card">
+                    <h2><i class="fa-solid fa-folder-plus"></i> ახალი დავალების შექმნა</h2>
+                    <form id="create-task-form">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>დავალების სათაური</label>
+                                <input type="text" id="task-title" placeholder="მაგ: ამოცანა #1 - შუქნიშნის აწყობა" required>
+                            </div>
+                            <div class="input-group">
+                                <label>დავალების ტიპი</label>
+                                <select id="task-type" required>
+                                    <option value="circuit_code">წრედის აწყობა + კოდი (Tinkercad სტილი)</option>
+                                    <option value="code_only">მხოლოდ კოდის წერა (Aiasoft სტილი)</option>
+                                    <option value="quiz">ტესტი / თეორიული კითხვები (Quiz)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>ჯამური ქულა</label>
+                                <input type="number" id="task-points" value="10" min="1" max="100" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>დავალების პირობა და ინსტრუქცია</label>
+                            <textarea id="task-desc" rows="3" placeholder="აღწერეთ რა უნდა გააკეთოს მოსწავლემ ამ დავალებაში..." required></textarea>
+                        </div>
+
+                        <!-- A) კოდის და სიმულატორის პარამეტრები (ჩანს წრედის და კოდის რეჟიმში) -->
+                        <div id="code-task-fields" class="form-row">
+                            <div class="input-group">
+                                <label>საწყისი კოდი (Arduino C++ შაბლონი)</label>
+                                <textarea id="task-starter-code" class="code-font" rows="6">void setup() {
+  // დაწერეთ კოდი აქ
+  
+}
+
+void loop() {
+  
+}</textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>სავალდებულო ბრძანებები კოდში (მძიმით გამოყავით)</label>
+                                <input type="text" id="task-required-keywords" placeholder="მაგ: pinMode, digitalWrite, delay">
+                                <small class="hint">თუ მოსწავლე ამ ბრძანებებს არ გამოიყენებს, კომპილატორი შეცდომას აჩვენებს და გააწითლებს!</small>
+                                
+                                <label style="margin-top: 10px;">გარე სიმულატორის ლინკი (არასავალდებულო)</label>
+                                <input type="url" id="task-sim-url" placeholder="ტოვებთ ცარიელს შიდა სქემების დაფისთვის">
+                            </div>
+                        </div>
+
+                        <!-- B) ტესტის / კითხვების კონსტრუქტორი (ჩნდება როცა აირჩევთ "ტესტი / თეორიული კითხვები") -->
+                        <div id="quiz-builder-fields" class="quiz-builder-section hidden">
+                            <div class="quiz-builder-header">
+                                <div>
+                                    <h3><i class="fa-solid fa-list-ol"></i> ტესტის კითხვების კონსტრუქტორი</h3>
+                                    <p class="subtitle" style="margin-bottom:0;">ჩაწერეთ კითხვები, 4 სავარაუდო პასუხი და მონიშნეთ სწორი პასუხი (სისტემა თავად დაითვლის ქულებს)</p>
+                                </div>
+                                <button type="button" onclick="addQuizQuestionBlock()" class="btn btn-accent btn-sm">
+                                    <i class="fa-solid fa-plus"></i> კითხვის დამატება
+                                </button>
+                            </div>
+
+                            <div id="quiz-questions-container" class="quiz-questions-container"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fa-solid fa-paper-plane"></i> დავალების გამოქვეყნება
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ყველა დავალების სია -->
+            <div id="teacher-all-tasks" class="tab-content hidden">
+                <h2><i class="fa-solid fa-list-check"></i> გამოქვეყნებული დავალებები</h2>
+                <div id="teacher-tasks-list" class="grid-list"></div>
+            </div>
+
+            <!-- მოსწავლეების შესრულებული დავალებები -->
+            <div id="teacher-submissions" class="tab-content hidden">
+                <h2><i class="fa-solid fa-graduation-cap"></i> მოსწავლეების მიერ გამოგზავნილი ნაშრომები</h2>
+                <div id="submissions-list" class="submissions-container"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. მოსწავლის პანელი -->
+    <section id="student-dashboard" class="dashboard hidden">
+        <div class="sidebar">
+            <button class="side-btn active" onclick="switchStudentTab('available-tasks')">
+                <i class="fa-solid fa-laptop-code"></i> სასწავლო დავალებები
+            </button>
+            <button class="side-btn" onclick="switchStudentTab('my-results')">
+                <i class="fa-solid fa-award"></i> ჩემი შედეგები და ქულები
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div id="student-available-tasks" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-rocket"></i> აქტიური დავალებები</h2>
+                    <p>აირჩიე დავალება, ააწყვე წრედი, დაწერე კოდი ან შეასრულე თეორიული ტესტი</p>
+                </div>
+                <div id="student-tasks-list" class="grid-list"></div>
+            </div>
+
+            <div id="student-my-results" class="tab-content hidden">
+                <h2><i class="fa-solid fa-chart-line"></i> ჩემი შესრულებული დავალებები</h2>
+                <div id="student-results-list" class="submissions-container"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. სამუშაო გარემო (Workspace Modal - Tinkercad + Compiler + Quiz Solver) -->
+    <div id="workspace-modal" class="modal hidden">
+        <div class="modal-header">
+            <div class="workspace-title">
+                <span class="badge-type" id="ws-type-badge">წრედი + კოდი</span>
+                <h3 id="ws-title">დავალების სახელი</h3>
+            </div>
+            <div class="workspace-actions">
+                <button onclick="closeWorkspace()" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-xmark"></i> დახურვა
+                </button>
+                <button onclick="submitTaskSolution()" class="btn btn-success btn-sm">
+                    <i class="fa-solid fa-paper-plane"></i> დასრულება და გაგზავნა
+                </button>
+            </div>
+        </div>
+
+        <!-- რეჟიმი 1: წრედის და კოდის სამუშაო დაფა -->
+        <div id="workspace-code-circuit-body" class="workspace-body">
+            <!-- მარცხენა პანელი -->
+            <div class="ws-left-panel">
+                <div class="task-instructions-box">
+                    <h4><i class="fa-solid fa-circle-info"></i> ამოცანის პირობა:</h4>
+                    <p id="ws-desc"></p>
+                </div>
+
+                <!-- Tinkercad სტილის ვიზუალური დაფა პინებით და ხაზებით -->
+                <div class="circuit-builder-container" id="internal-circuit-builder">
+                    <div class="components-toolbar">
+                        <span class="toolbar-label"><i class="fa-solid fa-plus"></i> დამატება:</span>
+                        <button onclick="addComponent('arduino')" class="comp-btn"><i class="fa-solid fa-microchip" style="color:#00979D"></i> Arduino Uno</button>
+                        <button onclick="addComponent('led_red')" class="comp-btn"><i class="fa-solid fa-lightbulb" style="color:#ef4444"></i> წითელი LED</button>
+                        <button onclick="addComponent('led_green')" class="comp-btn"><i class="fa-solid fa-lightbulb" style="color:#10b981"></i> მწვანე LED</button>
+                        <button onclick="addComponent('resistor')" class="comp-btn"><i class="fa-solid fa-grip-lines" style="color:#d97706"></i> რეზისტორი</button>
+                        <button onclick="addComponent('ultrasonic')" class="comp-btn"><i class="fa-solid fa-eye" style="color:#3b82f6"></i> HC-SR04</button>
+                        <button onclick="addComponent('servo')" class="comp-btn"><i class="fa-solid fa-gear" style="color:#a855f7"></i> Servo</button>
+                        
+                        <div class="wire-color-picker">
+                            <span>მავთული:</span>
+                            <input type="color" id="wire-color" value="#ef4444" title="მავთულის ფერი">
+                        </div>
+
+                        <button onclick="clearCanvas()" class="comp-btn btn-clear" title="დაფის გასუფთავება">
+                            <i class="fa-solid fa-trash"></i> გასუფთავება
+                        </button>
+                    </div>
+                    
+                    <div class="wiring-status-bar" id="wiring-status">
+                        <i class="fa-solid fa-plug"></i> <strong>ინსტრუქცია:</strong> დააწკაპუნეთ ერთ პინს (მაგ: D13) და შემდეგ მეორე პინს (მაგ: + Anode) მავთულის გასაბმელად. მავთულის წასაშლელად დააწკაპუნეთ თავად ხაზს.
+                    </div>
+
+                    <div id="circuit-canvas" class="circuit-canvas">
+                        <svg id="wires-svg" class="wires-svg"></svg>
+                        <div id="components-layer"></div>
+                        <div id="canvas-placeholder" class="canvas-placeholder">
+                            დაამატეთ Arduino და კომპონენტები ზედა პანელიდან და დააკავშირეთ პინები ხაზებით
+                        </div>
+                    </div>
+
+                    <div class="connections-log">
+                        <label><i class="fa-solid fa-link"></i> შეერთებული პინების სია:</label>
+                        <input type="text" id="ws-circuit-notes" readonly placeholder="ჯერ არცერთი პინი არ არის შეერთებული...">
+                    </div>
+                </div>
+
+                <!-- გარე სიმულატორი -->
+                <div id="external-simulator-box" class="external-sim hidden">
+                    <iframe id="ws-sim-iframe" src="" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- მარჯვენა პანელი: კოდის რედაქტორი -->
+            <div class="ws-right-panel">
+                <div class="code-editor-header">
+                    <span><i class="fa-solid fa-code"></i> Arduino C++ კოდის რედაქტორი</span>
+                    <button onclick="runCodeCheck()" class="btn btn-primary btn-xs">
+                        <i class="fa-solid fa-play"></i> კოდის კომპილაცია / შემოწმება
+                    </button>
+                </div>
+                
+                <div class="editor-wrapper" id="editor-wrapper">
+                    <textarea id="ws-code-editor" class="code-editor" spellcheck="false"></textarea>
+                </div>
+
+                <div id="compiler-output" class="compiler-output">
+                    > სისტემა მზადაა. დაწერეთ კოდი და დააჭირეთ „კოდის კომპილაციას“...
+                </div>
+            </div>
+        </div>
+
+        <!-- რეჟიმი 2: ტესტის (Quiz) შესრულების ეკრანი მოსწავლისთვის -->
+        <div id="workspace-quiz-body" class="workspace-quiz-body hidden">
+            <div class="quiz-solver-wrapper">
+                <div class="task-instructions-box" style="margin-bottom: 1.5rem;">
+                    <h4><i class="fa-solid fa-circle-question"></i> ტესტის ინსტრუქცია:</h4>
+                    <p id="ws-quiz-desc"></p>
+                </div>
+                <div id="student-quiz-questions" class="student-quiz-questions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast შეტყობინებები -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
